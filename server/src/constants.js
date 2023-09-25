@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 
 const {
   JWT_SECRET,
@@ -6,8 +7,12 @@ const {
   SQUADHELP_BANK_NUMBER,
   SQUADHELP_BANK_NAME,
   SQUADHELP_BANK_CVC,
-  SQUADHELP_BANK_EXPIRY
+  SQUADHELP_BANK_EXPIRY,
+  NODE_ENV
 } = process.env;
+
+const env = NODE_ENV || 'development';
+
 
 module.exports = {
   JWT_SECRET,
@@ -30,7 +35,7 @@ module.exports = {
   OFFER_STATUS_PENDING: 'pending',
   OFFER_STATUS_REJECTED: 'rejected',
   OFFER_STATUS_WON: 'won',
-  FILES_PATH: 'public/',
+  FILES_PATH: env === 'production' ? '/var/www/html/' : path.resolve(__dirname, '..', '..', 'public/'),
   SOCKET_CONNECTION: 'connection',
   SOCKET_SUBSCRIBE: 'subscribe',
   SOCKET_UNSUBSCRIBE: 'unsubscribe',
