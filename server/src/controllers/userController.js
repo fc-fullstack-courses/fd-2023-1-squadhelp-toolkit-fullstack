@@ -12,7 +12,9 @@ const ratingQueries = require('./queries/ratingQueries');
 module.exports.login = async (req, res, next) => {
   try {
     const foundUser = await userQueries.findUser({ email: req.body.email });
-    await userQueries.passwordCompare(req.body.password, foundUser.password);
+    
+    await foundUser.comparePassword(req.body.password);
+
     const accessToken = jwt.sign({
       firstName: foundUser.firstName,
       userId: foundUser.id,

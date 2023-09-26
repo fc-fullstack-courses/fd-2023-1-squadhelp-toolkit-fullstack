@@ -2,6 +2,8 @@
 const {
   Model
 } = require('sequelize');
+const bcrypt = require('bcrypt');
+const NotFound = require('../errors/UserNotFoundError');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -15,6 +17,15 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(Offer, { foreignKey: 'userId', targetKey: 'id' });
       User.hasMany(Contest, { foreignKey: 'userId', targetKey: 'id' });
       User.hasMany(Rating, { foreignKey: 'userId', targetKey: 'id' });
+    }
+
+    async comparePassword(password) {
+
+      const isSamePassword = await bcrypt.compare(password, this.password);
+
+      if (!isSamePassword) {
+        throw new NotFound('user with this data didn`t exist');
+      }
     }
   }
   User.init({
