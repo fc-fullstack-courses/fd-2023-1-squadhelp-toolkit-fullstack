@@ -12,7 +12,7 @@ const ratingQueries = require('./queries/ratingQueries');
 module.exports.login = async (req, res, next) => {
   try {
     const foundUser = await userQueries.findUser({ email: req.body.email });
-    
+
     await foundUser.comparePassword(req.body.password);
 
     const accessToken = jwt.sign({
@@ -34,8 +34,7 @@ module.exports.login = async (req, res, next) => {
 };
 module.exports.registration = async (req, res, next) => {
   try {
-    const newUser = await userQueries.userCreation(
-      Object.assign(req.body, { password: req.hashPass }));
+    const newUser = await userQueries.userCreation(req.body);
     const accessToken = jwt.sign({
       firstName: newUser.firstName,
       userId: newUser.id,

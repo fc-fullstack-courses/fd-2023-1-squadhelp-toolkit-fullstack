@@ -4,6 +4,14 @@ const {
 } = require('sequelize');
 const bcrypt = require('bcrypt');
 const NotFound = require('../errors/UserNotFoundError');
+const CONSTANTS = require('../constants');
+
+async function hashPassword(user, options) {
+  if(user.changed('password')) {
+    const passwordHash = await bcrypt.hash(user.password, CONSTANTS.SALT_ROUNDS);
+    user.password = passwordHash;
+  }
+}
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -88,5 +96,9 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'Users',
     timestamps: false
   });
+
+  User.beforeCreate(hashPassword);
+  User.beforeUpdate(hashPassword);
+
   return User;
 };
