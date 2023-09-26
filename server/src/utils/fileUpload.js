@@ -1,78 +1,48 @@
 const fs = require('fs');
-const path = require('path');
 const multer = require('multer');
-const ServerError = require('../errors/ServerError');
-const env = process.env.NODE_ENV || 'development';
-const devFilePath = path.resolve(__dirname, '..', '..', '..', 'public/images');
+const { FILES_PATH } = require('../constants');
 
-const filePath = env === 'production'
-  ? '/var/www/html/images/'
-  : devFilePath;
+const imagesFilePath = `${FILES_PATH}/images`;
 
-if (!fs.existsSync(filePath)) {
-  fs.mkdirSync(filePath, {
+const contestsFilePath = `${FILES_PATH}/contests`;
+
+if (!fs.existsSync(imagesFilePath)) {
+  fs.mkdirSync(imagesFilePath, {
     recursive: true,
   });
 }
 
-const storageContestFiles = multer.diskStorage({
-  destination (req, file, cb) {
-    cb(null, filePath);
+if (!fs.existsSync(contestsFilePath)) {
+  fs.mkdirSync(contestsFilePath, {
+    recursive: true,
+  });
+}
+
+const storageImageFiles = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, imagesFilePath);
   },
-  filename (req, file, cb) {
+  filename(req, file, cb) {
     cb(null, Date.now() + file.originalname);
   },
 });
 
-const uploadAvatars = multer({ storage: storageContestFiles }).single('file');
-const uploadContestFiles = multer({ storage: storageContestFiles }).array(
-  'files', 3);
-const updateContestFile = multer({ storage: storageContestFiles }).single(
-  'file');
-const uploadLogoFiles = multer({ storage: storageContestFiles }).single(
-  'offerData');
+const storageContestFiles = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, contestsFilePath);
+  },
+  filename(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
 
-module.exports.uploadAvatar = (req, res, next) => {
-  uploadAvatars(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      next(new ServerError());
-    } else if (err) {
-      next(new ServerError());
-    }
-    return next();
-  });
-};
 
-module.exports.uploadContestFiles = (req, res, next) => {
-  uploadContestFiles(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      next(new ServerError());
-    } else if (err) {
-      next(new ServerError());
-    }
-    return next();
-  });
-};
+module.exports.uploadAvatar = multer({ storage: storageImageFiles }).single('file');
 
-module.exports.updateContestFile = (req, res, next) => {
-  updateContestFile(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      next(new ServerError());
-    } else if (err) {
-      next(new ServerError());
-    }
-    return next();
-  });
-};
+const multerFilesMW = multer({ storage: storageContestFiles });
 
-module.exports.uploadLogoFiles = (req, res, next) => {
-  uploadLogoFiles(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      next(new ServerError());
-    } else if (err) {
-      next(new ServerError());
-    }
-    return next();
-  });
-};
+module.exports.uploadContestFiles = multerFilesMW.array('files', 3);
 
+module.exports.updateContestFile = multerFilesMW.single('file');
+
+module.exports.uploadLogoFiles = multerFilesMW.single('offerData');

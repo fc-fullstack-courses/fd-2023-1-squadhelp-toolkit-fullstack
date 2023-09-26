@@ -3,9 +3,9 @@ FROM node:16.15.1-alpine3.16
 ARG NODE_ENV="development"
 
 RUN mkdir /server \
-    && mkdir -p /public/images
-
-RUN mkdir -p /var/www/html/images 
+    && mkdir -p /public/images \
+    && mkdir -p /public/contests \
+    && mkdir -p /var/www/html/images 
 
 WORKDIR /server
 
@@ -16,7 +16,8 @@ RUN npm install -g sequelize-cli
 
 RUN npm install
 
-RUN chown -R node:node /server/node_modules
+RUN chown -R node:node /server/node_modules \
+    && chown -R node:node /public
 
 COPY . .
 
