@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import * as authController from '../../api/rest/authController';
 import * as restController from '../../api/rest/restController';
 import { checkAuth } from './authSlice';
 import { controller } from '../../api/ws/socketController';
@@ -13,16 +14,14 @@ const initialState = {
   data: null,
 };
 
-export const getUser = createAsyncThunk(
-  `${USER_SLICE_NAME}/getUser`,
-  async (replace, { rejectWithValue }) => {
+export const refresh = createAsyncThunk(
+  `${USER_SLICE_NAME}/refresh`,
+  async (refreshToken, { rejectWithValue }) => {
     try {
-      const { data } = await restController.getUser();
-      controller.subscribe(data.id);
-      if (replace) {
-        replace('/');
-      }
-      return data;
+      const { data: { user } } = await authController.refresh(refreshToken);
+      controller.subscribe(user.id);
+
+      return user;
     } catch (err) {
       return rejectWithValue({
         data: err?.response?.data ?? 'Gateway Timeout',
@@ -59,7 +58,7 @@ const reducers = {
 };
 
 const extraReducers = builder => {
-  builder.addCase(getUser.pending, state => {
+  builder.addCase(refresh.pending, state => {
     state.isFetching = true;
     state.error = null;
     state.data = null;
@@ -71,7 +70,7 @@ const extraReducers = builder => {
     state.data = null;
   });
 
-  builder.addCase(getUser.fulfilled, (state, { payload }) => {
+  builder.addCase(refresh.fulfilled, (state, { payload }) => {
     state.isFetching = false;
     state.data = payload;
   });
@@ -81,7 +80,7 @@ const extraReducers = builder => {
     state.data = payload;
   });
 
-  builder.addCase(getUser.rejected, rejectedReducer);
+  builder.addCase(refresh.rejected, rejectedReducer);
 
   builder.addCase(checkAuth.rejected, rejectedReducer);
 
