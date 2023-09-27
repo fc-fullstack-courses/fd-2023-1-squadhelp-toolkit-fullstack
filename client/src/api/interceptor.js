@@ -1,40 +1,62 @@
 import axios from 'axios';
 import CONSTANTS from '../constants';
-import history from '../browserHistory';
 
-const instance = axios.create({
+const httpClient = axios.create({
   baseURL: CONSTANTS.BASE_URL,
 });
 
-instance.interceptors.request.use(
+let accessToken = null;
+
+httpClient.interceptors.request.use(
   config => {
-    const token = window.localStorage.getItem(CONSTANTS.REFRESH_TOKEN);
-    if (token) {
-      config.headers = { ...config.headers, Authorization: token };
+
+    if (accessToken) {
+      config.headers = { ...config.headers, Authorization: `Bearer ${accessToken}` };
     }
     return config;
   },
   err => Promise.reject(err)
 );
 
-instance.interceptors.response.use(
+httpClient.interceptors.response.use(
   response => {
-    if (response.data.token) {
-      window.localStorage.setItem(CONSTANTS.REFRESH_TOKEN, response.data.token);
+    if (response.data.tokenPair) {
+      const {
+        accessToken: newAccessToken,
+        refreshToken
+      } = response.data.tokenPair;
+
+
+      window.localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refreshToken);
+      accessToken = newAccessToken;
     }
     return response;
   },
-  err => {
-    if (
-      err.response.status === 408 &&
-      history.location.pathname !== '/login' &&
-      history.location.pathname !== '/registration' &&
-      history.location.pathname !== '/'
-    ) {
-      history.replace('/login');
+  async err => {
+
+    const oldRefreshToken = localStorage.getItem(CONSTANTS.REFRESH_TOKEN);
+
+    if (err.response.status === 419 && oldRefreshToken) {
+
+      const {
+        data: {
+          tokenPair: {
+            accessToken: newAccessToken,
+            refreshToken
+          }
+        }
+      } = await axios.post(`${CONSTANTS.BASE_URL}/auth/refresh`, { refreshToken });
+
+      localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refreshToken);
+      accessToken = newAccessToken;
+
+      err.config.headers['Authorization'] = `Bearer ${accessToken}`;
+
+      return axios.request(err.config);
     }
+
     return Promise.reject(err);
   }
 );
 
-export default instance;
+export default httpClient;
