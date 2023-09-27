@@ -6,6 +6,7 @@ const router = require('./router');
 const controller = require('./socketInit');
 const handlerError = require('./handlerError/handler');
 const multerErrorHandler = require('./handlerError/multerErrorHandler');
+const tokenErrorsHandler = require('./handlerError/tokenErrorsHandler');
 const { FILES_PATH } = require('./constants');
 
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/public', express.static(FILES_PATH));
 app.use(router);
 
+app.use(tokenErrorsHandler);
 app.use(multerErrorHandler);
 app.use(handlerError);
 
