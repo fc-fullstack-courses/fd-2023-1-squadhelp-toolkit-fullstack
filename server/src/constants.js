@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 
 const {
-  JWT_SECRET,
+  ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_TIME,
   SQUADHELP_BANK_NUMBER,
   SQUADHELP_BANK_NAME,
@@ -15,7 +15,7 @@ const env = NODE_ENV || 'development';
 
 
 module.exports = {
-  JWT_SECRET,
+  ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_TIME,
   SALT_ROUNDS: 5,
   SQUADHELP_BANK_NUMBER,
