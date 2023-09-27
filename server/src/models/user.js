@@ -7,7 +7,7 @@ const NotFound = require('../errors/UserNotFoundError');
 const CONSTANTS = require('../constants');
 
 async function hashPassword(user, options) {
-  if(user.changed('password')) {
+  if (user.changed('password')) {
     const passwordHash = await bcrypt.hash(user.password, CONSTANTS.SALT_ROUNDS);
     user.password = passwordHash;
   }
@@ -20,11 +20,12 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Offer, Contest, Rating }) {
+    static associate({ Offer, Contest, Rating, RefreshToken }) {
       // define association here
       User.hasMany(Offer, { foreignKey: 'userId', targetKey: 'id' });
       User.hasMany(Contest, { foreignKey: 'userId', targetKey: 'id' });
       User.hasMany(Rating, { foreignKey: 'userId', targetKey: 'id' });
+      User.hasMany(RefreshToken, { foreignKey: 'userId', targetKey: 'id' });
     }
 
     async comparePassword(password) {
