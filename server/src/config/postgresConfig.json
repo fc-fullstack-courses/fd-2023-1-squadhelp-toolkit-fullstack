@@ -10,8 +10,8 @@
   },
   "test": {
     "username": "postgres",
-    "password": "password",
-    "database": "todo-test",
+    "password": "postgres",
+    "database": "todo-dev",
     "host": "localhost",
     "dialect": "postgres",
     "operatorsAliases": "Op",
