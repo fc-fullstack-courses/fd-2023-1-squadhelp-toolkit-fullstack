@@ -1,16 +1,16 @@
 {
   "development": {
     "username": "postgres",
-    "password": "password",
+    "password": "postgres",
     "database": "todo-dev",
-    "host": "db-dev",
+    "host": "localhost",
     "dialect": "postgres",
     "operatorsAliases": "Op",
     "seederStorage": "sequelize"
   },
   "test": {
     "username": "postgres",
-    "password": "admin",
+    "password": "password",
     "database": "todo-test",
     "host": "localhost",
     "dialect": "postgres",

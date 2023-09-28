@@ -9,6 +9,7 @@
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
+  "ignorePatterns" : ["__tests__"],
   "rules": {
     "comma-dangle": [
       "error",
