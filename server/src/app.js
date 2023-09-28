@@ -14,12 +14,11 @@ const createApp = () => {
   app.use(express.json());
   app.use('/public', express.static(FILES_PATH));
   app.use(router);
-  
   app.use(tokenErrorsHandler);
   app.use(multerErrorHandler);
   app.use(handlerError);
 
   return app;
-}
+};
 
 module.exports = createApp;
