@@ -10,7 +10,7 @@ const {
   SQUADHELP_BANK_NAME,
   SQUADHELP_BANK_CVC,
   SQUADHELP_BANK_EXPIRY,
-  NODE_ENV
+  NODE_ENV,
 } = process.env;
 
 const env = NODE_ENV || 'development';

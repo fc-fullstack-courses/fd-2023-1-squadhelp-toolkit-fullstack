@@ -33,7 +33,7 @@ httpClient.interceptors.response.use(
     return response;
   },
   async err => {
-
+    console.log('interceptor started')
     const oldRefreshToken = localStorage.getItem(CONSTANTS.REFRESH_TOKEN);
 
     if (err.response.status === 419 && oldRefreshToken) {
@@ -45,7 +45,9 @@ httpClient.interceptors.response.use(
             refreshToken
           }
         }
-      } = await axios.post(`${CONSTANTS.BASE_URL}/auth/refresh`, { refreshToken });
+      } = await axios.post(`${CONSTANTS.BASE_URL}auth/refresh`, { refreshToken: oldRefreshToken });
+
+      
 
       localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refreshToken);
       accessToken = newAccessToken;

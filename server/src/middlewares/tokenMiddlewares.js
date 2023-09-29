@@ -8,11 +8,15 @@ module.exports.checkAccessToken = async (req, res, next) => {
       headers: { authorization }
     } = req;
 
+    if (!authorization) {
+      return next(new TokenError('Access token required'));
+    }
+
     const [tokenType, accessToken] = authorization.split(' ');
 
 
     if (!accessToken) {
-      return next(TokenError('Access token required'));
+      return next(new TokenError('Access token required'));
     }
 
     req.tokenData = await tokenService.verifyAccessToken(accessToken);
